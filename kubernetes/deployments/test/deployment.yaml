@@ -2,13 +2,13 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: parser-deploy
+  name: parser-pipeline
   labels:
     app: parser-pipeline
     test: test
   annotations:
-    fluxcd.io/tag.example-app: semver:~1.0
-    fluxcd.io/automated: 'true'
+    noppon.w.cmu/tag.parser-pipeline: semver:~1.0
+    noppon.w.cmu/automated: 'true'
 spec:
   selector:
     matchLabels:
@@ -22,4 +22,42 @@ spec:
   template:
     metadata:
       labels:
-        app: example-app
+        app: parser-pipeline
+    spec:
+      containers:
+        - name: dota2parser-app
+          image: nopponaim603/dota2parser
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5600
+          # livenessProbe:
+          #   httpGet:
+          #     path: /status
+          #     port: 5000
+          #   initialDelaySeconds: 3
+          #   periodSeconds: 3
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+      tolerations:
+        - key: "cattle.io/os"
+          value: "linux"
+          effect: "NoSchedule"
+          #NOTE: comment out `volumeMounts` section for configmap and\or secret guide
+          # volumeMounts:
+          # - name: secret-volume
+          #   mountPath: /secrets/
+          # - name: config-volume
+          #   mountPath: /configs/
+      #NOTE: comment out `volumes` section for configmap and\or secret guide
+      # volumes:
+      # - name: secret-volume
+      #   secret:
+      #     secretName: mysecret
+      # - name: config-volume
+      #   configMap:
+      #     name: example-config #name of our configmap object
