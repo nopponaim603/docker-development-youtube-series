@@ -2,18 +2,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: parser-pipeline
+  name: e2e-parser-pipeline-deployment
   labels:
-    app: parser-pipeline
-    test: test
+    app: e2e-parser-pipeline
   annotations:
-    noppon.w.cmu/tag.parser-pipeline: semver:~1.0
+    noppon.w.cmu/tag.parser-pipeline: abaddon:~1.0
     noppon.w.cmu/automated: 'true'
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: parser-pipeline
-  replicas: 1
   strategy:
     type: RollingUpdate
     rollingUpdate:
